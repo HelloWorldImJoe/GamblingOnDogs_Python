@@ -1,0 +1,55 @@
+# 运行环境: prod(实盘) 或 demo(模拟盘)
+environment: demo
+
+# 交易循环全局设置
+trading:
+  poll_interval_sec: 30       # 轮询间隔，秒（默认30秒）
+  default_leverage: 100       # 默认杠杆
+  default_tp_percent: 0.20    # 止盈20%
+  default_sl_percent: 0.10    # 止损10%
+  # 止盈止损计划单触发价类型
+  # tp_trigger_type/sl_trigger_type 可选值：
+  #   last  —— 最新成交价（默认，最常用，跟随市场波动快）
+  #   mark  —— 标记价格（OKX风控用价，波动较平滑，防止极端行情误触）
+  #   index —— 指数价格（外部现货指数，适合套利或跟踪现货）
+  # 示例：
+  # trading:
+  #   tp_trigger_type: last   # 止盈触发价类型，可选 last/mark/index，默认last
+  #   sl_trigger_type: mark   # 止损触发价类型，可选 last/mark/index，默认last
+  tp_trigger_type: last       # 或 mark/index
+  sl_trigger_type: last       # 或 mark/index
+  base_notional_usdt: 10      # 每次开仓的本金USDT上限
+  margin_mode: cross          # cross 或 isolated
+  dry_run: true               # 默认为干跑，避免误下单；命令行 --live 可覆盖
+  # 全局最大合约数上限（若单个标的未设置，则使用此值进行钳制）
+  # max_contracts: 1000
+
+# 标的与个性化参数列表
+instruments:
+  - inst_id: BTC-USDT-SWAP
+    leverage: 100
+    tp_percent: 0.20  # 指的是币价的20%, 不是本金的20%, 可以根据倍率计算, 比如100x的话 20%止盈, 就是0.2%的波动
+    sl_percent: 0.10
+    base_notional_usdt: 10
+    # 合约数控制（可选）：
+    # 固定某个张数下单（强制覆盖计划值）
+    # fixed_contracts: 100
+    # 或者仅设定该标的最大张数上限
+    # max_contracts: 800
+  - inst_id: ETH-USDT-SWAP
+    leverage: 100
+    tp_percent: 0.20
+    sl_percent: 0.10
+    base_notional_usdt: 10
+    # fixed_contracts: 50
+    # max_contracts: 500
+
+# AI设置（OpenAI 兼容）
+ai:
+  provider: openai
+  base_url: https://api.openai.com/v1
+  model: gpt-4o-mini
+  # api_key 优先从环境变量 OPENAI_API_KEY 读取
+
+log:
+  level: INFO
